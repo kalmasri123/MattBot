@@ -5,13 +5,11 @@ import { join } from 'path';
 import { env } from '@util/env';
 import { nextTick } from 'process';
 
-const commandNames = readdirSync(join(__dirname, '../commands/')).filter(
-    (el) => {
-        console.log(el)
-        const extension = process.env.ENV == "DEBUG" ? ".ts":".js"
-        return el != `Command${extension}` && el.endsWith(extension)
-    }
-);
+const commandNames = readdirSync(join(__dirname, '../commands/')).filter((el) => {
+    console.log(el);
+    const extension = process.env.ENV == 'DEBUG' ? '.ts' : '.js';
+    return el != `Command${extension}` && el.endsWith(extension);
+});
 const commands = {};
 const messageQueue = {};
 commandNames.map(async (commandName) => {
@@ -40,25 +38,30 @@ async function handleMessage(guild: Guild) {
     const args = message.content.split(' ');
     const commandName = args[0].slice(1);
     const command: Command = commands[commandName] ? commands[commandName] : null;
-    if (!command) return next();
-    try {
-        await command.executeFunction(message, next);
-        if (!resolved) {
-            next();
+    if (!command) {
+        try {
+            await command.executeFunction(message, next);
+            if (!resolved) {
+                next();
+            }
+            return;
+        } catch (err) {
+            if (!resolved) {
+                console.log(err);
+                message.reply('An Unexpected error has occurred');
+                next();
+            }
         }
-        return;
-    } catch (err) {
-        if (!resolved) {
-            console.log(err)
-            message.reply("An Unexpected error has occurred")
-            next();
-        }
+    }
+    else {
+        //MattBot message
+        
     }
     return null;
 }
 
 export default async function Message(message: Discord.Message) {
-    console.log(message.content)
+    console.log(message.content);
     if (!messageQueue[message.guild.id])
         messageQueue[message.guild.id] = { queue: [], handlingMessage: false };
 

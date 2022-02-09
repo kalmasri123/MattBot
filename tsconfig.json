@@ -14,7 +14,9 @@
     "incremental": true,
     "skipLibCheck": true,
     "paths": {
-      "@util/*": ["util/*"]
+      "@util/*": ["util/*"],
+      "@models/*": ["models/*"]
+
     },
 
   },"ts-node":{
