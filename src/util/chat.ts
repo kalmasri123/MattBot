@@ -51,7 +51,6 @@ function getRandomElement<Type>(arr: Type[]): Type {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 export async function handleChatMessage(message: Message) {
-    const t1 = Date.now();
     const args = message.content.split(' ');
     let categoriesObj = {};
     const keywords = await KeyWord.find({ word: { $in: args } });
@@ -63,7 +62,6 @@ export async function handleChatMessage(message: Message) {
         categoriesObj[el.category]['magnitude'] += el.magnitude;
     });
     const categories = Object.values(categoriesObj) as WordCategory[];
-    console.log(categories);
     const highestWordCategories = findMaxMagnitude(categories);
     highestWordCategories.forEach((el) =>
         categories.splice(
@@ -78,7 +76,6 @@ export async function handleChatMessage(message: Message) {
     if (filtered.length == 0) return;
     const finalCategories = findMaxMagnitude(filtered);
     const decidedCategory = getRandomElement(finalCategories);
-    const words = decidedCategory.keywords.map((el) => el.word);
     const messageContent = message.content;
     const specialWords = (await SpecialWord.find({})).filter((el) =>
         messageContent.includes(el.phrase),
@@ -109,9 +106,7 @@ export async function handleChatMessage(message: Message) {
             ),
         )?.sentence;
     }
-    console.log(responseSentence);
     responseSentence = responseSentence.replace(/%(.+)%/g, function (match, m1) {
-        console.log(m1);
         let replacement = templates[m1] ? templates[m1](m1) : match;
         console.log(replacement);
         return replacement;
