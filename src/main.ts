@@ -4,6 +4,8 @@ import { env } from '@util/env';
 import PresenceUpdate from './controllers/PresenceUpdate';
 import { Client, Intents } from 'discord.js';
 import Message from './controllers/Message';
+import * as mongoose from 'mongoose';
+mongoose.connect(process.env.MONGOURI)
 try {
     const client: Client = new Client({
         intents: [

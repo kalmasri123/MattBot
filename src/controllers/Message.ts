@@ -4,6 +4,7 @@ import { cp, readdirSync } from 'fs';
 import { join } from 'path';
 import { env } from '@util/env';
 import { nextTick } from 'process';
+import { handleChatMessage } from '@util/chat';
 
 const commandNames = readdirSync(join(__dirname, '../commands/')).filter((el) => {
     console.log(el);
@@ -33,12 +34,11 @@ async function handleMessage(guild: Guild) {
     messageQueue[guild.id].handlingMessage = true;
     const prefix = message.content.charAt(0);
     if (message.author.bot) return next();
-    if (prefix != env.PREFIX) return next();
-    //Identify if command
     const args = message.content.split(' ');
     const commandName = args[0].slice(1);
     const command: Command = commands[commandName] ? commands[commandName] : null;
-    if (!command) {
+    console.log(command);
+    if (command && prefix == env.PREFIX) {
         try {
             await command.executeFunction(message, next);
             if (!resolved) {
@@ -48,14 +48,15 @@ async function handleMessage(guild: Guild) {
         } catch (err) {
             if (!resolved) {
                 console.log(err);
-                message.reply('An Unexpected error has occurred');
+                // message.reply('An Unexpected error has o     ccurred');
                 next();
             }
         }
-    }
-    else {
+    } else {
         //MattBot message
-        
+        console.log("not command")
+        handleChatMessage(message);
+        next();
     }
     return null;
 }
