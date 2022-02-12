@@ -74,7 +74,7 @@ export async function handleChatMessage(message: Message) {
 
     reduceMagnitudes(highestWordCategories, categories);
     //After reduction, get max
-    const filtered = highestWordCategories.filter((el) => el.magnitude >= 5);
+    const filtered = highestWordCategories.filter((el) => el.magnitude >= 3);
     if (filtered.length == 0) return;
     const finalCategories = findMaxMagnitude(filtered);
     const decidedCategory = getRandomElement(finalCategories);
